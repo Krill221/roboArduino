@@ -46,7 +46,6 @@ void setup() {
 
   delay(500);
 
-
 }
 
 void loop()  
@@ -120,7 +119,7 @@ void loop()
 void forward(int ms){
   myservo5.write(0); //right rev
   myservo6.write(360); //left            
-  delay(ms);
+  delay(ms*400);
   myservo5.write(90);
   myservo6.write(90);
 }
@@ -128,7 +127,7 @@ void forward(int ms){
 void back(int ms){
   myservo5.write(360); //right rev
   myservo6.write(0); //left            
-  delay(ms);
+  delay(ms*400);
   myservo5.write(90);
   myservo6.write(90);
 }
