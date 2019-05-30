@@ -45,9 +45,9 @@ void setup() {
 
   Serial.println("init done");
 
-  rotate_to_closer_line();
-  rotate_to_left_line();
-  rotate_to_closer_line();
+  rotate_left_90();
+  delay(3000);
+  rotate_right_90();
 }
 
 void loop() {
@@ -142,10 +142,15 @@ void rotate_to_closer_line() {
     //turn
     if (top_side == bottom_side && top_side < 0 ) { turn_left(200); continue; }
     if (top_side == bottom_side && top_side > 0 ) { turn_right(200); continue; }
-    if (top_side == 0 && bottom_side < 0) { turn_r_f(100); continue; }
-    if (top_side == 0 && bottom_side > 0) { turn_l_f(100); continue; }
-    if (bottom_side == 0 && top_side < 0) { turn_l_b(100); continue; }
-    if (bottom_side == 0 && top_side > 0) { turn_r_b(100); continue; }
+    
+    if (top_side == 0 && bottom_side < 0 && bottom_side > -4 ) { turn_r_f(100); continue; }
+    if (top_side == 0 && bottom_side < 0 && bottom_side <= -4 ) { turn_r_f(200); continue; }
+    if (top_side == 0 && bottom_side > 0 && bottom_side < 4) { turn_l_f(100); continue; }
+    if (top_side == 0 && bottom_side > 0 && bottom_side >= 4) { turn_l_f(200); continue; }
+    if (bottom_side == 0 && top_side < 0  && top_side > -4 ) { turn_l_b(100); continue; }
+    if (bottom_side == 0 && top_side < 0  && top_side <= -4 ) { turn_l_b(200); continue; }
+    if (bottom_side == 0 && top_side > 0 && top_side < 4 ) { turn_r_b(100); continue; }
+    if (bottom_side == 0 && top_side > 0 && top_side >= 4 ) { turn_r_b(200); continue; }
     
     if (bottom_side == right_side && bottom_side == left_side && bottom_side > top_side  ) { turn_r_f(100); continue; }
     if (bottom_side == right_side && bottom_side == left_side && bottom_side < top_side  ) { turn_l_f(100); continue; }
@@ -162,7 +167,8 @@ void rotate_to_closer_line() {
   }
 }
 
-void rotate_to_left_line() {
+void rotate_to_other_line() {
+  // TODO ???
   turn_left(600);
   for(int i =0; i < 5; i++){
     //shift_to_center();
@@ -173,25 +179,32 @@ void rotate_to_left_line() {
   turn_left(300);
 }
 
-void rotate_to_right_line() {
-  turn_right(600);
-  for(int i =0; i < 10; i++){
-    //shift_to_center();
-    Serial.println("rotate_to_right_line");
-    float top_side = get_side(octoliner_top, 1);;
-    if (top_side < 0) turn_right(300);
-  }
-}
 
 void rotate_left_90() {
     Serial.println("rotate_left_90");
-    rotate_to_left_line();
+    rotate_to_closer_line();
+    turn_left(700);
+    delay(2000);
+    turn_left(700);
+    delay(2000);
+    turn_left(700);
+    delay(2000);
+    turn_left(700);
+    delay(2000);
     rotate_to_closer_line();
 }
 
 void rotate_right_90() {
     Serial.println("rotate_right_90");
-    rotate_to_right_line();
+    rotate_to_closer_line();
+    turn_right(700);
+    delay(2000);
+    turn_right(700);
+    delay(2000);
+    turn_right(700);
+    delay(2000);
+    turn_right(700);
+    delay(2000);
     rotate_to_closer_line();
 }
 
