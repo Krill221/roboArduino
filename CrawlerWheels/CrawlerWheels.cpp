@@ -4,15 +4,19 @@
 */
 
 #include "Arduino.h"
-#include "Morse.h"
+#include "CrawlerWheels.h"
 
-CrawlerWheels::CrawlerWheels(int left, int right, int sensitivity, int brightness)
-{
-  octoliner_top(42);
-  octoliner_bottom(43);
-  octoliner_left(44);
-  octoliner_right(45);
 
+Multiservo myservo_r;
+Multiservo myservo_l;
+Octoliner octoliner_top(42);
+Octoliner octoliner_bottom(43);
+Octoliner octoliner_left(44);
+Octoliner octoliner_right(45);
+
+CrawlerWheels::CrawlerWheels() { }
+
+void CrawlerWheels::init(int left, int right, int sensitivity, int brightness){
   last_top = 0;
   last_bottom = 0;
   last_left = 0;
@@ -57,13 +61,15 @@ void CrawlerWheels::print_coords(){
   float right_side = get_side(octoliner_right, 3);
 
   Serial.print(" t: "); Serial.print(top_side); Serial.print(" b: "); Serial.print(bottom_side); Serial.print(" l: "); Serial.print(left_side); Serial.print(" r: "); Serial.println(right_side);
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
 }
 
 
 void CrawlerWheels::shift_to_center() { // add error to 10
     // 1. hard shift to center circle (out lines)
     for(int i =0; i < 10; i++){
-      Serial.print("hard shift 1 ");
+      Serial.println("hard shift 1");
       boolean o_line_top_side = is_out_line_side(octoliner_top);
       boolean o_line_bottom_side = is_out_line_side(octoliner_bottom);
       boolean o_line_left_side = is_out_line_side(octoliner_left);
@@ -92,7 +98,7 @@ void CrawlerWheels::shift_to_center() { // add error to 10
     }
     // 1. hard shift to center circle (double lines)
     for(int i =0; i < 10; i++){
-      Serial.print("hard shift 2 ");
+      Serial.println("hard shift 2 ");
       boolean d_line_top_side = is_double_line_side(octoliner_top);
       boolean d_line_bottom_side = is_double_line_side(octoliner_bottom);
       boolean d_line_left_side = is_double_line_side(octoliner_left);
@@ -119,7 +125,7 @@ void CrawlerWheels::shift_to_center() { // add error to 10
       if(top_side == 0 && bottom_side  == 0 && left_side == 0 && right_side == 0){ Serial.println("done --------------"); break; }
 
       // same sides
-      Serial.print("soft shift same sides ");
+      Serial.println("soft shift same sides ");
       if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 1 ) { move_forward(40); continue; }
       if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 1 ) { move_back(40); continue; }
       if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 2 ) { move_forward(60); continue; }
@@ -155,7 +161,7 @@ void CrawlerWheels::shift_to_center() { // add error to 10
       Serial.println(" --none");
 
       // different sides
-      Serial.print("soft shift different sides ");
+      Serial.println("soft shift different sides ");
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_back(40);  continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_forward(40); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_back(60); continue; }
@@ -177,7 +183,6 @@ void CrawlerWheels::shift_to_center() { // add error to 10
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) ) {  move_forward(60); continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(40); continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) ) {  move_back(60); continue; }
-      Serial.print("zzz ");
 
       if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_left(400);  continue; }
       if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) ) { move_left(400); continue; }

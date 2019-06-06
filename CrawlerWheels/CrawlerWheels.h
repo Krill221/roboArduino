@@ -12,8 +12,6 @@
 #include <Octoliner.h>
 #include <Multiservo.h>
 
-
-
 // -1  0  1
 //  1    -1
 //  0     0
@@ -23,7 +21,8 @@
 class CrawlerWheels
 {
   public:
-    CrawlerWheels(int left, int right, int sensitivity, int brightness);
+    CrawlerWheels();
+    void init(int left, int right, int sensitivity, int brightness);
     void move_step_forward();
     void move_step_back();
     void rotate_left_90();
@@ -57,21 +56,14 @@ class CrawlerWheels
 
   private:
 
-    Multiservo myservo_r;
-    Multiservo myservo_l;
-    Octoliner octoliner_top(42);
-    Octoliner octoliner_bottom(43);
-    Octoliner octoliner_left(44);
-    Octoliner octoliner_right(45);
-
-    int last_top = 0;
-    int last_bottom = 0;
-    int last_left = 0;
-    int last_right = 0;
+    int last_top;
+    int last_bottom;
+    int last_left;
+    int last_right;
 
     /// orientation
-    int global_angle = 0;
-    int global_step = 0;
+    int global_angle;
+    int global_step;
 };
 
 #endif
