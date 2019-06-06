@@ -1,9 +1,9 @@
 #include <Wire.h>
 #include <Octoliner.h>
-#include <Servo.h>
+#include <Multiservo.h>
 
-Servo myservo1;
-Servo myservo2;
+Multiservo myservo_r;
+Multiservo myservo_l;
 Octoliner octoliner_top(42);
 Octoliner octoliner_bottom(43);
 Octoliner octoliner_left(44);
@@ -14,7 +14,7 @@ int last_left = 0;
 int last_right = 0;
 
 /// orientation
-int global_deg = 0;
+int global_angle = 0;
 int global_path = 0;
 
 // -1  0  1
@@ -25,14 +25,44 @@ int global_path = 0;
 
 void setup() {
   Serial.begin(9600);
+  delay(3000);
 
-  // wheels init
-  myservo1.attach(8); myservo1.write(90);
-  myservo2.attach(9); myservo2.write(90);
+  init_wheels(6, 7);
+  init_sensors(220, 255);
+  Serial.println("init done");
 
-  // sensors init
-  int sensitivity = 220;
-  int brightness = 255;
+  //test
+  //rotate_to_closer_line();
+  //Serial.print("global angle: "); Serial.println(global_angle);
+  rotate_left_90();
+  //Serial.print("global angle: "); Serial.println(global_angle);
+  rotate_right_90();
+  //Serial.print("global angle: "); Serial.println(global_angle);
+
+}
+
+void loop() {
+    Serial.println("Loop:");
+    float top_side = get_side(octoliner_top, 1);;
+    float bottom_side = get_side(octoliner_bottom, 2);
+    float left_side = get_side(octoliner_left, 4);
+    float right_side = get_side(octoliner_right, 3);
+
+    Serial.print(" t: "); Serial.print(top_side); Serial.print(" b: "); Serial.print(bottom_side); Serial.print(" l: "); Serial.print(left_side); Serial.print(" r: "); Serial.println(right_side);
+    delay(3000);
+}
+
+//////
+//////
+
+
+void init_wheels(int r, int l){
+  myservo_l.attach(l); myservo_l.write(95);
+  myservo_r.attach(r); myservo_r.write(95);
+
+}
+
+void init_sensors(int sensitivity, int brightness){
   Wire.begin();
   octoliner_bottom.begin();
   octoliner_bottom.setSensitivity(sensitivity); octoliner_bottom.setBrightness(brightness);
@@ -46,165 +76,7 @@ void setup() {
   octoliner_right.begin();
   octoliner_right.setSensitivity(sensitivity); octoliner_right.setBrightness(brightness);
   delay(200);
-
-  Serial.println("init done");
-
-  rotate_to_closer_line();
-
-  for(int i = 0; i< 13; i++) {
-    turn_left(300);
-    delay(900);
-  }
-  rotate_to_closer_line();
-
-  delay(2000);
-
-  for(int i = 0; i< 13; i++) {
-    turn_right(300);
-    delay(900);
-  }
-  rotate_to_closer_line();
-  
-  //turn_left(750);
-  //delay(750);
-  
-  //rotate_to_ather_line();
-  
-  //rotate_to_closer_line();
-  
-  //move_back(3000);
-  //rotate_to_closer_line();
 }
-
-void loop() {
-    Serial.println("Loop:");
-    float top_side = get_side(octoliner_top, 1);;
-    float bottom_side = get_side(octoliner_bottom, 2);
-    float left_side = get_side(octoliner_left, 4);
-    float right_side = get_side(octoliner_right, 3);
-
-    Serial.print(" top: ");
-    Serial.print(top_side);
-    Serial.print(" bot: ");
-    Serial.print(bottom_side);
-    Serial.print(" left: ");
-    Serial.print(left_side);
-    Serial.print(" right: ");
-    Serial.print(right_side);
-    Serial.println();
-    
-    delay(3000);
-}
-
-int find_current_angle(int top, int bot, int right, int left){
-  float cur_angle;   int k;
-  int X11 = top; int X12 = (bot*-1);
-  if(X11 >= X12) k = X11 - X12; if(X11 < X12) k = X12 - X11;
-  cur_angle = 180 - 90 - (((atan((float)14/(float)k)) * 180.0)/PI);
-  if(X11 > X12) cur_angle = -cur_angle;
-  Serial.print("current angle: "); Serial.print(cur_angle);
-  if(X11 == X12) Serial.println(" --||--");
-  if(X11 > X12)  Serial.println(" --\\--");
-  if(X11 < X12)  Serial.println(" --//--");
-  return cur_angle;
-}
-
-
-int find_need_angle(int top, int bot, int right, int left){
-  int xi; int yi;
-  float need_angle;
-  // координаты отрезков 
-  int X11 = top; int Y11 = 7;    int X12 = (bot*-1); int Y12 = -7;
-  int X21 = -7;  int Y21 = left; int X22 = 7;        int Y22 = (right*-1);
-  // параметры отрезков
-  int a1 = Y11 - Y12; int b1 = X12 - X11;
-  int a2 = Y21 - Y22; int b2 = X22 - X21;
-  // координаты точки пересечения
-  int d = a1 * b2 - a2 * b1;
-  if( d != 0 ) {
-    int c1 = Y12 * X11 - X12 * Y11;
-    int c2 = Y22 * X21 - X22 * Y21;
-    xi = (b1 * c2 - b2 * c1) / d;
-    yi = (a2 * c1 - a1 * c2) / d;
-  } else { xi = 0; yi = 0; }
-  if(yi != 0 ) {
-    need_angle = (((atan((float)-xi/(float)-yi)) * 180.0)/PI);
-  }
-  if(yi == 0 ) {
-    need_angle = (((atan((float)(-(xi+1))/(float)(-(yi+1)))) * 180.0)/PI);
-  }
-  if(xi == 0 && yi < 0) need_angle =  -45;
-  if(xi == 0 && yi > 0) need_angle =  45;
-  if(xi == 0 && yi == 0) need_angle =  0;
-  if( (xi == 0 && yi == 0) || (xi == 1 && yi == 0) || (xi == -1 && yi == 0) ) need_angle =  0;
-  if( (xi == 0 && yi == 1) || (xi == 0 && yi == -1) ) need_angle =  0;
-  Serial.print("need angle:  "); Serial.println(need_angle);
-  return need_angle;
-}
-
-int find_xi(int top, int bot, int right, int left){
-  int xi; int yi;
-  // координаты отрезков 
-  int X11 = top; int Y11 = 7;    int X12 = (bot*-1); int Y12 = -7;
-  int X21 = -7;  int Y21 = left; int X22 = 7;        int Y22 = (right*-1);
-  
-  // параметры отрезков
-  int a1 = Y11 - Y12; int b1 = X12 - X11;
-  int a2 = Y21 - Y22; int b2 = X22 - X21;
-
-  // координаты точки пересечения
-  int d = a1 * b2 - a2 * b1;
-  if( d != 0 ) {
-    int c1 = Y12 * X11 - X12 * Y11;
-    int c2 = Y22 * X21 - X22 * Y21;
-    xi = (b1 * c2 - b2 * c1) / d;
-    yi = (a2 * c1 - a1 * c2) / d;
-  } else {
-     xi = 0;
-     yi = 0;
-  }
-  Serial.print("xi: "); Serial.println(xi);
-  return xi;
-}
-
-int find_yi(int top, int bot, int right, int left){
-  int xi; int yi;
-  // координаты отрезков 
-  int X11 = top; int Y11 = 7;    int X12 = (bot*-1); int Y12 = -7;
-  int X21 = -7;  int Y21 = left; int X22 = 7;        int Y22 = (right*-1);
-  
-  // параметры отрезков
-  int a1 = Y11 - Y12; int b1 = X12 - X11;
-  int a2 = Y21 - Y22; int b2 = X22 - X21;
-
-  // координаты точки пересечения
-  int d = a1 * b2 - a2 * b1;
-  if( d != 0 ) {
-    int c1 = Y12 * X11 - X12 * Y11;
-    int c2 = Y22 * X21 - X22 * Y21;
-    xi = (b1 * c2 - b2 * c1) / d;
-    yi = (a2 * c1 - a1 * c2) / d;
-  } else {
-     xi = 0;
-     yi = 0;
-  }
-  Serial.print("yi: "); Serial.println(yi);
-  return yi;
-}
-
-
-int find_section(int xi, int yi){
-  if( (xi == 0 && yi == 0) || (xi == 1 && yi == 0) || (xi == -1 && yi == 0) ){ Serial.println("section: 0"); return 0; }
-  if( (xi == 0 && yi == 1) || (xi == 0 && yi == -1) ){ Serial.println("section: 0"); return 0; }
-  if(xi < 0 && yi < 0){ Serial.println("section: 1"); return 1; }
-  if(xi < 0 && yi >= 0){ Serial.println("section: 2"); return 2; }
-  if(xi >= 0 && yi >= 0){ Serial.println("section: 3"); return 3; }
-  if(xi >= 0 && yi < 0){ Serial.println("section: 4"); return 4; }
-  return 0;
-}
-
-//////
-//////
 
 void shift_to_center() { // add error to 10
     // 1. hard shift to center circle (out lines)
@@ -302,10 +174,10 @@ void shift_to_center() { // add error to 10
       
       // different sides
       Serial.print("soft shift different sides ");
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) {  continue; }
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) {  continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_back(40);  continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_forward(40); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_back(60); continue; }
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_forward(100); continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_forward(60); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 4 ) {  move_back(100); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 4 ) {  move_forward(100); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 6 ) {  move_back(200); continue; }
@@ -314,57 +186,32 @@ void shift_to_center() { // add error to 10
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) > 6 ) {  move_forward(300); continue; }
       
 
-      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 2  ) {  continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) {  move_forward(40);  continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) ) {  move_forward(60); continue; }
-      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 2  ) {  continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(40);  continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) ) {  move_back(60); continue; }
+      
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_forward(40);  continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) ) {  move_forward(60); continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(40); continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) ) {  move_back(60); continue; }
+      Serial.print("zzz ");
 
-      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) {   continue; }
+      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_left(400);  continue; }
       if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) ) { move_left(400); continue; }
       
-      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) {   continue; }
+      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_right(400); continue; }
       if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) > abs(bottom_side) ) ) { move_right(400); continue; }
 
-      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) {  continue; }
+      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_right(400); continue; }
       if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) < abs(bottom_side) ) ) { move_right(400); continue; }
 
-      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) {   continue; }
+      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) { move_left(400); continue; }
       if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) > abs(bottom_side) ) )  {  move_left(400); continue; }
       
       Serial.println(" --none");
       break;
     }
-}
-
-void new_shift() {
-  for(int i =0; i < 5; i++){
-    if(i == 9) Serial.println("Out of time --------");
-    
-    Serial.println("new_shift");
-    delay(400);
-    int top_side = get_side(octoliner_top, 1);;
-    int bottom_side = get_side(octoliner_bottom, 2);
-    int left_side = get_side(octoliner_left, 4);
-    int right_side = get_side(octoliner_right, 3);
-    // correction by 4 sides
-    if(top_side == bottom_side && top_side  == left_side && abs( abs(right_side) - abs(top_side) ) < 2 ) right_side = top_side;
-    if(top_side == bottom_side && top_side == right_side && abs( abs(left_side) - abs(top_side) ) < 2 ) left_side = top_side;
-    if(top_side == left_side && top_side == right_side && abs( abs(top_side) - abs(bottom_side) ) < 2 ) bottom_side = top_side;
-    if(bottom_side == left_side && bottom_side == right_side && abs( abs(bottom_side) - abs(top_side) ) < 2) top_side = bottom_side;
-    if(top_side == right_side && abs( abs(bottom_side) - abs(left_side) ) < 2 ) bottom_side = left_side;
-    if(top_side == left_side && abs( abs(bottom_side) - abs(right_side) ) < 2) bottom_side = right_side;
-    Serial.println("-------");
-    Serial.print(top_side); Serial.print(" "); Serial.print(bottom_side); Serial.print(" "); Serial.print(left_side); Serial.print(" "); Serial.println(right_side);
-    if(top_side == 0 && bottom_side  == 0 && left_side == 0 && right_side == 0){ Serial.println("done --------------"); break; }
-    // new algorithm
-    int xi = find_xi(top_side, bottom_side, right_side, left_side);
-    int yi = find_yi(top_side, bottom_side, right_side, left_side);
-    int section = find_section(xi, yi);
-    int need_angle = find_need_angle(top_side, bottom_side, right_side, left_side);
-    int current_angle = find_current_angle(top_side, bottom_side, right_side, left_side);
-    
-    break;
-  }
 }
 
 void rotate_to_closer_line() {
@@ -415,6 +262,7 @@ void rotate_to_closer_line() {
     
     if (bottom_side == right_side && bottom_side == left_side && bottom_side > top_side  ) { turn_r_f(60); continue; }
     if (bottom_side == right_side && bottom_side == left_side && bottom_side < top_side  ) { turn_l_f(60); continue; }
+    
     if (top_side == right_side && top_side == left_side && top_side > bottom_side  ) { turn_r_b(60); continue; }
     if (top_side == right_side && top_side == left_side && top_side < bottom_side  ) { turn_l_b(60); continue; }
     
@@ -425,38 +273,32 @@ void rotate_to_closer_line() {
     if (top_side == right_side && top_side == left_side && top_side == bottom_side && top_side > 0  ) { turn_right(200); continue; }
     if (top_side == right_side && top_side == left_side && top_side == bottom_side && top_side < 0  ) { turn_left(200); continue; }
         
-    if (top_side == right_side && bottom_side == left_side ) { turn_left(200); continue; }
-    if (top_side == left_side && bottom_side == right_side ) { turn_right(200); continue; }
-    
-    //if(top_side < 0 && bottom_side < 0 && top_side < bottom_side ) { turn_l_f(100); continue; }
-    
+    if (top_side == right_side && bottom_side == left_side ) { turn_left(100); continue; }
+    if (top_side == left_side && bottom_side == right_side ) { turn_right(100); continue; }
+
+        
     break;
   }
 }
 
-// get coordinates
+
 boolean out_line_side(Octoliner &octoliner) {
   boolean o_line = false; int lines = 0;
   int data[8];
   for (int i = 0; i < 8; i++) {
     data[i] = octoliner.analogRead(i);
-    //Serial.print(data[i]);
-    //Serial.print(" ");
   }
   for (int i = 0; i < 8; i++) { if( data[i] < 60 ) lines++;  }
   if(lines == 8) { return true; }
   return false;
 }
 
-// get coordinates
 boolean double_line_side(Octoliner &octoliner) {
   boolean d_line = false; float sum = 0; float avg = 0; int lines = 0;
   int data[8];
   //Serial.print("d line: ");
   for (int i = 0; i < 8; i++) {
     data[i] = octoliner.analogRead(i); sum += data[i];
-    //Serial.print(data[i]);
-    //Serial.print(" ");
   }
   avg = sum/8;
   for (int i = 0; i < 8; i++) {
@@ -502,56 +344,48 @@ int get_side(Octoliner &octoliner, int sen){
   return side;
 }
 
-void rotate_left_90() {
+void rotate_left_90() { // avg load
     Serial.println("rotate_left_90");
     rotate_to_closer_line();
-    turn_left(700);
-    delay(1000);
-    turn_left(700);
-    delay(1000);
-    turn_left(700);
-    delay(1000);
-    turn_left(700);
-    delay(1000);
+    for(int i = 0; i< 13; i++) {
+      turn_left(300);
+      delay(900);
+    }
     rotate_to_closer_line();
-
-    global_deg = global_deg - 90;
+    delay(900);
+    global_angle = global_angle - 90;
 }
 
-void rotate_right_90() {
+void rotate_right_90() { // avg load
     Serial.println("rotate_right_90");
     rotate_to_closer_line();
-    turn_right(700);
-    delay(1000);
-    turn_right(700);
-    delay(1000);
-    turn_right(700);
-    delay(1000);
-    turn_right(700);
-    delay(1000);
+    for(int i = 0; i< 13; i++) {
+      turn_right(300);
+      delay(900);
+    }
     rotate_to_closer_line();
-
-    global_deg = global_deg + 90;
+    delay(900);
+    global_angle = global_angle + 90;
 }
 
 
 /// wheels moves
 void turn_right(int ms){
   Serial.println("turn_right");
-  myservo1.write(180); //left
-  myservo2.write(180); //right
+  myservo_r.write(185); //left
+  myservo_l.write(185); //right
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_r.write(95);
+  myservo_l.write(95);
   delay(400);
 }
 void turn_left(int ms){
   Serial.println("turn_left");
-  myservo2.write(-90); //right
-  myservo1.write(-90); //left
+  myservo_l.write(5); //right
+  myservo_r.write(5); //left
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_r.write(95);
+  myservo_l.write(95);
   delay(400);
 }
 void move_left(int ms){
@@ -570,51 +404,43 @@ void move_right(int ms){
 }
 void move_forward(int ms){
   Serial.println("move_forward");
-  myservo1.write(180);
-  myservo2.write(0);
+  myservo_r.write(0);
+  myservo_l.write(185);
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_r.write(95);
+  myservo_l.write(95);
   delay(400);
 }
 void move_back(int ms){
   Serial.println("move_back");
-  myservo1.write(0);
-  myservo2.write(180);
+  myservo_r.write(185);
+  myservo_l.write(0);
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_r.write(95);
+  myservo_l.write(95);
   delay(400);
 }
 void turn_r_f(int ms){
-  //Serial.println("turn_r_f");
-  myservo2.write(0);
+  myservo_r.write(0);
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_r.write(95);
   delay(400);
 }
 void turn_l_f(int ms){
-  //Serial.println("turn_l_f");
-  myservo1.write(360);
+  myservo_l.write(360); //- f
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_l.write(95);
   delay(400);
 }
 void turn_r_b(int ms){
-  //Serial.println("turn_r_b");
-  myservo2.write(360);
+  myservo_r.write(360); //- back
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_r.write(95);
   delay(400);
 }
 void turn_l_b(int ms){
-  //Serial.println("turn_l_b");
-  myservo1.write(0);
+  myservo_l.write(0);
   delay(ms);
-  myservo1.write(90);
-  myservo2.write(90);
+  myservo_l.write(95);
   delay(400);
 }

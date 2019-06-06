@@ -1,25 +1,20 @@
-#include <Servo.h>
+#include <Multiservo.h>
 
-Servo myservo;
-Servo myservo1;
-Servo myservo2;
-Servo myservo3;
-Servo myservo4;
-Servo myservo5;
-Servo myservo6;
+Multiservo myservo;
+Multiservo myservo1;
+Multiservo myservo2;
+Multiservo myservo3;
+Multiservo myservo4;
+
 
 int pos1 = 90;
 int pos2 = 90;
 int pos3 = 90;
 int pos4 = 90;
-int pos5 = 90;
-int pos6 = 90;
 int max1 = 160; int min1 = 90;
 int max2 = 180; int min2 = 0;
-int max3 = 180; int min3 = 26;
-int max4 = 120; int min4 = 0;
-int max5 = 160; int min5 = 90;
-int max6 = 160; int min6 = 90;
+int max3 = 180; int min3 = 0;
+int max4 = 180; int min4 = 0;
 
 byte descript[9];
 int send_num;
@@ -29,24 +24,125 @@ String send_val;
 void setup() {
 
   // hand
-  myservo1.attach(11);
-  myservo2.attach(2);
-  myservo3.attach(4);
-  myservo4.attach(3);
-  myservo5.attach(62);
-  myservo6.attach(63);
-
-  // wheels setup
-  myservo5.write(90);  
-  myservo6.write(90); 
+  myservo1.attach(17);
+  myservo2.attach(16);
+  myservo3.attach(15);
+  myservo4.attach(14);
 
   //port
   Serial.begin(9600);
 
-
-  delay(500);
-
+  arm_position_5(); // to base arm opened
+  delay(1000);
+  arm_position_6(); // to 1 lev arm opened
+  delay(1000);
+  
+  arm_position_1(); // 1 lev arm open
+  delay(1000);
+  arm_position_2(); // 1 lev arm closed
+  delay(1000);
+  arm_position_3(); // to base arm closed
+  delay(1000);
+  arm_position_4(); // to 1 lev arm closed
+  delay(1000);
+  arm_position_1();  // 1 lev arm open
+  delay(1000);
+  arm_position_5();  // to base arm opened
+  delay(1000);
+  
 }
+
+void arm_position_1(){ // 1 lev arm open
+  arm_move( 1, 90 );
+  arm_move( 2, 90 );
+  arm_move( 3, 140 );
+  arm_move( 4, 180 );
+  
+}
+
+void arm_position_2(){  //1 lev arm closed
+  arm_move( 1, 130 );
+  arm_move( 2, 90 );
+  arm_move( 3, 140 );
+  arm_move( 4, 180 );
+  
+}
+
+void arm_position_3(){ // to base arm closed
+  arm_move( 1, 130 );
+  arm_move( 2, 90 );
+  arm_move( 4, 160 );
+  arm_move( 3, 120 );
+  arm_move( 4, 140 );
+  arm_move( 3, 100 );
+  arm_move( 4, 120 );
+  arm_move( 3, 80 );
+  arm_move( 4, 100 );
+  arm_move( 3, 60 );
+  arm_move( 4, 80 );
+  arm_move( 3, 40 );
+  arm_move( 4, 60 );
+  arm_move( 3, 0 );
+}
+
+void arm_position_4(){ // to 1 lev arm closed
+  arm_move( 3, 0 );
+  arm_move( 4, 60 );
+  arm_move( 3, 40 );
+  arm_move( 4, 80 );
+  arm_move( 3, 60 );
+  arm_move( 4, 100 );
+  arm_move( 3, 80 );
+  arm_move( 4, 120 );
+  arm_move( 3, 100 );
+  arm_move( 4, 140 );
+  arm_move( 4, 140 );
+  arm_move( 3, 120 );
+  arm_move( 4, 160 );
+  arm_move( 3, 140 );
+  arm_move( 4, 180 );
+  arm_move( 2, 90 );
+  arm_move( 1, 130 );
+}
+
+void arm_position_5(){ // to base arm opened
+  arm_move( 1, 90 );
+  arm_move( 2, 90 );
+  arm_move( 4, 160 );
+  arm_move( 3, 120 );
+  arm_move( 4, 140 );
+  arm_move( 3, 100 );
+  arm_move( 4, 120 );
+  arm_move( 3, 80 );
+  arm_move( 4, 100 );
+  arm_move( 3, 60 );
+  arm_move( 4, 80 );
+  arm_move( 3, 40 );
+  arm_move( 4, 60 );
+  arm_move( 3, 0 );
+}
+
+void arm_position_6(){ // to 1 lev arm opened
+  arm_move( 3, 0 );
+  arm_move( 4, 60 );
+  arm_move( 3, 40 );
+  arm_move( 4, 80 );
+  arm_move( 3, 60 );
+  arm_move( 4, 100 );
+  arm_move( 3, 80 );
+  arm_move( 4, 120 );
+  arm_move( 3, 100 );
+  arm_move( 4, 140 );
+  arm_move( 4, 140 );
+  arm_move( 3, 120 );
+  arm_move( 4, 160 );
+  arm_move( 3, 140 );
+  arm_move( 4, 180 );
+  arm_move( 2, 90 );
+  arm_move( 1, 90 );
+}
+
+
 
 void loop()  
 {  
@@ -73,7 +169,7 @@ void loop()
       Serial.print(" ");
       Serial.print(value);
       Serial.print("\n");
-      ser( send_num, value );
+      arm_move( send_num, value );
       break;
       
       case 'M':
@@ -85,19 +181,19 @@ void loop()
       switch (send_num)
       {
         case 1:
-        forward(value);
+        //forward(value);
         break;
         
         case 2:
-        back(value);
+        //back(value);
         break;
 
         case 3:
-        turn_right(value);
+        //turn_right(value);
         break;
 
         case 4:
-        turn_left(value);
+        //turn_left(value);
         break;
       }
       break;
@@ -116,39 +212,8 @@ void loop()
   } // конец чтение порта 
 }
 
-void forward(int ms){
-  myservo5.write(0); //right rev
-  myservo6.write(360); //left            
-  delay(ms*400);
-  myservo5.write(90);
-  myservo6.write(90);
-}
 
-void back(int ms){
-  myservo5.write(360); //right rev
-  myservo6.write(0); //left            
-  delay(ms*400);
-  myservo5.write(90);
-  myservo6.write(90);
-}
-
-void turn_left(int ms){
-  myservo5.write(0); //right rev
-  myservo6.write(0); //left            
-  delay(ms);
-  myservo5.write(90);
-  myservo6.write(90);
-}
-
-void turn_right(int ms){
-  myservo5.write(360); //right rev
-  myservo6.write(360); //left            
-  delay(ms);
-  myservo5.write(90);
-  myservo6.write(90);
-}
-
-void ser(int serv, int deg){
+void arm_move(int serv, int deg){
   int max = 360;
   int min = 0;
   int pos = 0;
@@ -176,20 +241,10 @@ void ser(int serv, int deg){
     if(pos4 < min) pos4 = min;
     pos = pos4;
   }
-  if (serv == 5) {
-    myservo = myservo5; max = max5; min = min5;
-    if(pos5 > max) pos5 = max;
-    if(pos5 < min) pos5 = min;
-    pos = pos5;
-  }
-  if (serv == 6) {
-    myservo = myservo6; max = max6; min = min6;
-    if(pos6 > max) pos6 = max;
-    if(pos6 < min) pos6 = min;
-    pos = pos6;
-  }
+
   if(deg > max) deg = max;
   if(deg < min) deg = min;
+  
   for (int i = pos; i <= deg; i += 1) {
     //Serial.print(i);
     //Serial.print("\n");
@@ -208,6 +263,4 @@ void ser(int serv, int deg){
   if (serv == 2) pos2 = pos;
   if (serv == 3) pos3 = pos;
   if (serv == 4) pos4 = pos;
-  if (serv == 5) pos5 = pos;
-  if (serv == 6) pos6 = pos;
 }
