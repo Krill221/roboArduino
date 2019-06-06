@@ -15,7 +15,7 @@ int last_right = 0;
 
 /// orientation
 int global_angle = 0;
-int global_path = 0;
+int global_step = 0;
 
 // -1  0  1
 //  1    -1
@@ -32,12 +32,24 @@ void setup() {
   Serial.println("init done");
 
   //test
-  //rotate_to_closer_line();
-  //Serial.print("global angle: "); Serial.println(global_angle);
+  move_step_forward();
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
   rotate_left_90();
-  //Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
+  move_step_forward();
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
+  move_step_back();
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
   rotate_right_90();
-  //Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
+  move_step_back();
+  Serial.print("global angle: "); Serial.println(global_angle);
+  Serial.print("global step: "); Serial.println(global_step);
 
 }
 
@@ -342,6 +354,62 @@ int get_side(Octoliner &octoliner, int sen){
     if(sen == 4) side = last_left;
   }
   return side;
+}
+
+void move_step_forward() { // avg load
+    Serial.println("move_step_forward");
+    rotate_to_closer_line();
+    for(int i = 0; i< 10; i++) {
+      move_forward(200);
+      int left_side = get_side(octoliner_left, 4);
+      int right_side = get_side(octoliner_right, 3);
+      if(left_side < -6 || right_side > 6) break;
+      delay(500);
+    }
+    move_forward(400);
+    delay(500);
+    move_forward(400);
+    delay(500);
+    move_forward(400);
+    delay(500);
+    for(int i = 0; i< 10; i++) {
+      move_forward(200);
+      int left_side = get_side(octoliner_left, 4);
+      int right_side = get_side(octoliner_right, 3);
+      if(left_side > -5 || right_side < 5) break;
+      delay(500);
+    }
+    rotate_to_closer_line();
+    delay(500);
+    global_step = global_step + 1;
+}
+
+void move_step_back() { // avg load
+    Serial.println("move_step_back");
+    rotate_to_closer_line();
+    for(int i = 0; i< 10; i++) {
+      move_back(200);
+      int left_side = get_side(octoliner_left, 4);
+      int right_side = get_side(octoliner_right, 3);
+      if(right_side < -6 || left_side > 6) break;
+      delay(500);
+    }
+    move_back(400);
+    delay(500);
+    move_back(400);
+    delay(500);
+    move_back(400);
+    delay(500);
+    for(int i = 0; i< 10; i++) {
+      move_back(200);
+      int left_side = get_side(octoliner_left, 4);
+      int right_side = get_side(octoliner_right, 3);
+      if(right_side > -5 || left_side < 5) break;
+      delay(500);
+    }
+    rotate_to_closer_line();
+    delay(500);
+    global_step = global_step - 1;
 }
 
 void rotate_left_90() { // avg load
