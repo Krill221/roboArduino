@@ -42,21 +42,21 @@ void RoboHand::free(){
 
 void RoboHand::arm_position_base_open(){ // to base arm opened
   arm_set( 1, 90 );
-  arm_set( 2, 91 );
+  arm_set( 2, 101 );
   arm_set( 3, 0 );
   arm_set( 4, 60 );
 }
 
 void RoboHand::arm_position_base_closed(){ // to base arm opened
   arm_set( 1, 138 );
-  arm_set( 2, 91 );
+  arm_set( 2, 101 );
   arm_set( 3, 0 );
   arm_set( 4, 60 );
 }
 
 void RoboHand::arm_position_level_1_open(){ // 1 lev arm open
   arm_set( 1, 90 );
-  arm_set( 2, 91 );
+  arm_set( 2, 101 );
   arm_set( 3, 140 );
   arm_set( 4, 180 );
 
@@ -64,7 +64,7 @@ void RoboHand::arm_position_level_1_open(){ // 1 lev arm open
 
 void RoboHand::arm_position_level_1_closed(){  //1 lev arm closed
   arm_set( 1, 138 );
-  arm_set( 2, 91 );
+  arm_set( 2, 101 );
   arm_set( 3, 140 );
   arm_set( 4, 180 );
 
@@ -72,25 +72,25 @@ void RoboHand::arm_position_level_1_closed(){  //1 lev arm closed
 
 void RoboHand::arm_move_base_closed(){ // to base arm closed
   arm_set( 1, 136 );
-  arm_set( 2, 90 );
+  arm_set( 2, 102 );
   arm_move2(0, 60);
 }
 
 void RoboHand::arm_move_level_1_closed(){ // to 1 lev arm closed
   arm_set( 1, 136 );
-  arm_set( 2, 90 );
+  arm_set( 2, 102 );
   arm_move2(140, 180);
 }
 
 void RoboHand::arm_move_base_open(){ // to base arm opened
   arm_set( 1, 90 );
-  arm_set( 2, 90 );
+  arm_set( 2, 102 );
   arm_move2(0, 60);
 }
 
 void RoboHand::arm_move_level_1_open(){ // to 1 lev arm opened
   arm_set( 1, 90 );
-  arm_set( 2, 90 );
+  arm_set( 2, 102 );
   arm_move2(140, 180);
 }
 
@@ -157,7 +157,6 @@ void RoboHand::arm_move2(int deg3, int deg4){
       myservo3.write(pos3);
     }
     if(abs(abs(pos4) - abs(deg4)) > 1) {
-      Serial.println(abs(abs(pos4) - abs(deg4)));
       pos4 = pos4 + step4;
       myservo4.write(pos4);
     }
