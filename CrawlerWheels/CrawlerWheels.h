@@ -22,7 +22,7 @@ class CrawlerWheels
 {
   public:
     CrawlerWheels();
-    void init(int left, int right, int sensitivity, int brightness);
+    void init(int sensitivity, int brightness);
     void move_step_forward();
     void move_step_back();
     void rotate_left_90();
@@ -31,6 +31,7 @@ class CrawlerWheels
 
 
     void init_wheels(int r, int l);
+    void free_wheels();
     void init_sensors(int sensitivity, int brightness);
     void shift_to_center();
     void rotate_to_closer_line();

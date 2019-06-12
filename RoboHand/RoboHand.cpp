@@ -28,99 +28,70 @@ void RoboHand::init(int m1, int m2, int m3, int m4){
 
   myservo1.attach(m1); myservo3.attach(m3);
   myservo2.attach(m2); myservo4.attach(m4);
-
+  delay(300);
   Serial.println("init RoboHand done");
 }
 
+void RoboHand::free(){
 
-void RoboHand::arm_position_1(){ // 1 lev arm open
-  arm_move( 1, 90 );
-  arm_move( 2, 90 );
-  arm_move( 3, 140 );
-  arm_move( 4, 180 );
+  myservo1.detach(); myservo3.detach();
+  myservo2.detach(); myservo4.detach();
+  delay(400);
+  Serial.println("free RoboHand done");
+}
+
+void RoboHand::arm_position_base_open(){ // to base arm opened
+  arm_set( 1, 90 );
+  arm_set( 2, 91 );
+  arm_set( 3, 0 );
+  arm_set( 4, 60 );
+}
+
+void RoboHand::arm_position_base_closed(){ // to base arm opened
+  arm_set( 1, 138 );
+  arm_set( 2, 91 );
+  arm_set( 3, 0 );
+  arm_set( 4, 60 );
+}
+
+void RoboHand::arm_position_level_1_open(){ // 1 lev arm open
+  arm_set( 1, 90 );
+  arm_set( 2, 91 );
+  arm_set( 3, 140 );
+  arm_set( 4, 180 );
 
 }
 
-void RoboHand::arm_position_2(){  //1 lev arm closed
-  arm_move( 1, 130 );
-  arm_move( 2, 90 );
-  arm_move( 3, 140 );
-  arm_move( 4, 180 );
+void RoboHand::arm_position_level_1_closed(){  //1 lev arm closed
+  arm_set( 1, 138 );
+  arm_set( 2, 91 );
+  arm_set( 3, 140 );
+  arm_set( 4, 180 );
 
 }
 
-void RoboHand::arm_position_3(){ // to base arm closed
-  arm_move( 1, 130 );
-  arm_move( 2, 90 );
-  arm_move( 4, 160 );
-  arm_move( 3, 120 );
-  arm_move( 4, 140 );
-  arm_move( 3, 100 );
-  arm_move( 4, 120 );
-  arm_move( 3, 80 );
-  arm_move( 4, 100 );
-  arm_move( 3, 60 );
-  arm_move( 4, 80 );
-  arm_move( 3, 40 );
-  arm_move( 4, 60 );
-  arm_move( 3, 0 );
+void RoboHand::arm_move_base_closed(){ // to base arm closed
+  arm_set( 1, 136 );
+  arm_set( 2, 90 );
+  arm_move2(0, 60);
 }
 
-void RoboHand::arm_position_4(){ // to 1 lev arm closed
-  arm_move( 3, 0 );
-  arm_move( 4, 60 );
-  arm_move( 3, 40 );
-  arm_move( 4, 80 );
-  arm_move( 3, 60 );
-  arm_move( 4, 100 );
-  arm_move( 3, 80 );
-  arm_move( 4, 120 );
-  arm_move( 3, 100 );
-  arm_move( 4, 140 );
-  arm_move( 4, 140 );
-  arm_move( 3, 120 );
-  arm_move( 4, 160 );
-  arm_move( 3, 140 );
-  arm_move( 4, 180 );
-  arm_move( 2, 90 );
-  arm_move( 1, 130 );
+void RoboHand::arm_move_level_1_closed(){ // to 1 lev arm closed
+  arm_set( 1, 136 );
+  arm_set( 2, 90 );
+  arm_move2(140, 180);
 }
 
-void RoboHand::arm_position_5(){ // to base arm opened
-  arm_move( 1, 90 );
-  arm_move( 2, 90 );
-  arm_move( 4, 160 );
-  arm_move( 3, 120 );
-  arm_move( 4, 140 );
-  arm_move( 3, 100 );
-  arm_move( 4, 120 );
-  arm_move( 3, 80 );
-  arm_move( 4, 100 );
-  arm_move( 3, 60 );
-  arm_move( 4, 80 );
-  arm_move( 3, 40 );
-  arm_move( 4, 60 );
-  arm_move( 3, 0 );
+void RoboHand::arm_move_base_open(){ // to base arm opened
+  arm_set( 1, 90 );
+  arm_set( 2, 90 );
+  arm_move2(0, 60);
 }
 
-void RoboHand::arm_position_6(){ // to 1 lev arm opened
-  arm_move( 3, 0 );
-  arm_move( 4, 60 );
-  arm_move( 3, 40 );
-  arm_move( 4, 80 );
-  arm_move( 3, 60 );
-  arm_move( 4, 100 );
-  arm_move( 3, 80 );
-  arm_move( 4, 120 );
-  arm_move( 3, 100 );
-  arm_move( 4, 140 );
-  arm_move( 4, 140 );
-  arm_move( 3, 120 );
-  arm_move( 4, 160 );
-  arm_move( 3, 140 );
-  arm_move( 4, 180 );
-  arm_move( 2, 90 );
-  arm_move( 1, 90 );
+void RoboHand::arm_move_level_1_open(){ // to 1 lev arm opened
+  arm_set( 1, 90 );
+  arm_set( 2, 90 );
+  arm_move2(140, 180);
 }
 
 void RoboHand::arm_move(int serv, int deg){
@@ -169,4 +140,36 @@ void RoboHand::arm_move(int serv, int deg){
   if (serv == 2) pos2 = pos;
   if (serv == 3) pos3 = pos;
   if (serv == 4) pos4 = pos;
+}
+
+
+void RoboHand::arm_move2(int deg3, int deg4){
+  deg3 = (min3 > deg3) ? min3 : deg3;
+  deg3 = (max3 < deg3) ? max3 : deg3;
+  deg4 = (min4 > deg4) ? min4 : deg4;
+  deg4 = (max4 < deg4) ? max4 : deg4;
+  float step3 = (pos3 < deg3) ? 1 : -1;
+  float step4 = (pos4 < deg4) ? 0.8 : -1;
+
+  for (int i = 0; i <= 180; i++) {
+    if(pos3 != deg3) {
+      pos3 = pos3 + step3;
+      myservo3.write(pos3);
+    }
+    if(abs(abs(pos4) - abs(deg4)) > 1) {
+      Serial.println(abs(abs(pos4) - abs(deg4)));
+      pos4 = pos4 + step4;
+      myservo4.write(pos4);
+    }
+    delay(15);
+  }
+}
+
+void RoboHand::arm_set(int serv, int deg){
+  delay(300);
+  if (serv == 1){ pos1 = deg; myservo1.write(deg); }
+  if (serv == 2){ pos2 = deg; myservo2.write(deg); }
+  if (serv == 3){ pos3 = deg; myservo3.write(deg); }
+  if (serv == 4){ pos4 = deg; myservo4.write(deg); }
+  delay(300);
 }

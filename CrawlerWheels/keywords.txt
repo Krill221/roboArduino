@@ -1,7 +1,3 @@
-Morse	KEYWORD1
-dash	KEYWORD2
-dot	KEYWORD2
-
 CrawlerWheels KEYWORD1
 move_step_forward KEYWORD2
 move_step_back KEYWORD2
@@ -29,3 +25,4 @@ find_current_angle KEYWORD2
 find_need_angle KEYWORD2
 find_xi KEYWORD2
 find_yi KEYWORD2
+free_wheels KEYWORD2

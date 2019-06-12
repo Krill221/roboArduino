@@ -16,7 +16,7 @@ Octoliner octoliner_right(45);
 
 CrawlerWheels::CrawlerWheels() { }
 
-void CrawlerWheels::init(int left, int right, int sensitivity, int brightness){
+void CrawlerWheels::init(int sensitivity, int brightness){
   last_top = 0;
   last_bottom = 0;
   last_left = 0;
@@ -26,9 +26,13 @@ void CrawlerWheels::init(int left, int right, int sensitivity, int brightness){
   global_angle = 0;
   global_step = 0;
 
-  init_wheels(left, right);
   init_sensors(sensitivity, brightness);
-  Serial.println("init done");
+  Serial.println("init CrawlerWheels done");
+}
+
+void CrawlerWheels::free_wheels(){
+  myservo_l.detach();
+  myservo_r.detach();
 }
 
 
@@ -390,7 +394,7 @@ void CrawlerWheels::move_step_back() { // avg load
 void CrawlerWheels::rotate_left_90() {
     Serial.println("rotate_left_90");
     rotate_to_closer_line();
-    for(int i = 0; i< 13; i++) {
+    for(int i = 0; i< 8; i++) {
       turn_left(300);
       delay(900);
     }
@@ -402,7 +406,7 @@ void CrawlerWheels::rotate_left_90() {
 void CrawlerWheels::rotate_right_90() {
     Serial.println("rotate_right_90");
     rotate_to_closer_line();
-    for(int i = 0; i< 13; i++) {
+    for(int i = 0; i< 8; i++) {
       turn_right(300);
       delay(900);
     }
@@ -438,7 +442,7 @@ void CrawlerWheels::move_left(int ms){
   turn_l_b(ms);
 }
 void CrawlerWheels::move_right(int ms){
-  Serial.println("move_right");
+  Serial.println("move_right 11");
   turn_l_f(ms);
   turn_r_f(ms);
   turn_l_b(ms);
@@ -469,13 +473,13 @@ void CrawlerWheels::turn_r_f(int ms){
   delay(400);
 }
 void CrawlerWheels::turn_l_f(int ms){
-  myservo_l.write(360); //- f
+  myservo_l.write(185); //- f
   delay(ms);
   myservo_l.write(95);
   delay(400);
 }
 void CrawlerWheels::turn_r_b(int ms){
-  myservo_r.write(360); //- back
+  myservo_r.write(185); //- back
   delay(ms);
   myservo_r.write(95);
   delay(400);
