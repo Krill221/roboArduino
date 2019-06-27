@@ -79,7 +79,7 @@ void loop() {
                 }
               }
               if( item1 == "P" ){
-                if( item2 == "1"){
+                if( item2 == "1" || item2 == "0"){
                   hand.init(17, 16, 15, 14);
                   hand.arm_position_base_open();
                   hand.arm_move_level_1_open();
@@ -89,7 +89,7 @@ void loop() {
                 }
               }
               if( item1 == "D" ){
-                if( item2 == "1"){
+                if( item2 == "1" || item2 == "0"){
                   hand.init(17, 16, 15, 14);
                   hand.arm_position_base_closed();
                   hand.arm_move_level_1_closed();

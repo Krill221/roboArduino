@@ -28,10 +28,12 @@ class RoboHand
 
     void arm_move(int serv, int deg);
     void arm_move2(int deg3, int deg4);
+    void arm_move3(int deg3, int deg4);
 
     void arm_set(int serv, int deg);
 
   private:
+    int m1; int m2; int m3; int m4;
     float pos1;
     float pos2;
     float pos3;

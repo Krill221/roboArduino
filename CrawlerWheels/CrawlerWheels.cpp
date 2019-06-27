@@ -130,10 +130,12 @@ void CrawlerWheels::shift_to_center() { // add error to 10
 
       // same sides
       Serial.println("soft shift same sides ");
-      if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 1 ) { move_forward(40); continue; }
-      if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 1 ) { move_back(40); continue; }
-      if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 2 ) { move_forward(60); continue; }
-      if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 2 ) { move_back(60); continue; }
+      if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 1 ) { move_forward(30); continue; }
+      if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 1 ) { move_back(30); continue; }
+      if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 2 ) { move_forward(50); continue; }
+      if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 2 ) { move_back(50); continue; }
+      if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 3 ) { move_forward(70); continue; }
+      if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 3 ) { move_back(70); continue; }
       if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 4 ) { move_forward(100); continue; }
       if (left_side < 0 && right_side > 0  && abs(left_side - right_side) <= 4 ) { move_back(100); continue; }
       if (left_side > 0 && right_side < 0  && abs(left_side - right_side) <= 5 ) { move_forward(150); continue; }
@@ -146,6 +148,8 @@ void CrawlerWheels::shift_to_center() { // add error to 10
       if (left_side < 0 && right_side > 0  && abs(left_side - right_side) > 8 ) { move_back(400); continue; }
 
       // TODO find angle
+      if (top_side > 0 && bottom_side < 0 && abs(top_side - bottom_side) <= 1) { move_right(100); continue; }
+      if (top_side < 0 && bottom_side > 0 && abs(top_side - bottom_side) <= 1) { move_left(100); continue; }
       if (top_side > 0 && bottom_side < 0 && abs(top_side - bottom_side) <= 2) { move_right(200); continue; }
       if (top_side < 0 && bottom_side > 0 && abs(top_side - bottom_side) <= 2) { move_left(200); continue; }
       if (top_side > 0 && bottom_side < 0 && abs(top_side - bottom_side) <= 3) { move_right(300); continue; }
@@ -166,38 +170,40 @@ void CrawlerWheels::shift_to_center() { // add error to 10
 
       // different sides
       Serial.println("soft shift different sides ");
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_back(40);  continue; }
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_forward(40); continue; }
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_back(60); continue; }
-      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_forward(60); continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_back(30);  continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2 ) { move_forward(30); continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_back(50); continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 3 ) {  move_forward(50); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 4 ) {  move_back(100); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 4 ) {  move_forward(100); continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 5 ) {  move_back(150); continue; }
+      if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 5 ) {  move_forward(150); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 6 ) {  move_back(200); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) <= 6 ) {  move_forward(200); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) > 6 ) {  move_back(300); continue; }
       if ( (left_side > 0 && right_side > 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) > 6 ) {  move_forward(300); continue; }
 
 
-      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) {  move_forward(40);  continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) {  move_forward(30);  continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) ) {  move_forward(60); continue; }
-      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(40);  continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(30);  continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) < abs(right_side) ) ) {  move_back(60); continue; }
 
-      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_forward(40);  continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_forward(30);  continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) ) {  move_forward(60); continue; }
-      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(40); continue; }
+      if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) && abs(abs(left_side) - abs(right_side) ) < 2  ) { move_back(30); continue; }
       if ( (left_side < 0 && right_side < 0) && (abs(left_side) > abs(right_side) ) ) {  move_back(60); continue; }
 
-      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_left(400);  continue; }
+      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_left(300);  continue; }
       if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) < abs(bottom_side) ) ) { move_left(400); continue; }
 
-      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_right(400); continue; }
+      if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_right(300); continue; }
       if ( (top_side > 0 && bottom_side > 0) && (abs(top_side) > abs(bottom_side) ) ) { move_right(400); continue; }
 
-      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_right(400); continue; }
+      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) < abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) < 2  ) { move_right(300); continue; }
       if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) < abs(bottom_side) ) ) { move_right(400); continue; }
 
-      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) { move_left(400); continue; }
+      if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) > abs(bottom_side) ) && abs(abs(top_side) - abs(bottom_side) ) <= 2  ) { move_left(300); continue; }
       if ( (top_side < 0 && bottom_side < 0) && (abs(top_side) > abs(bottom_side) ) )  {  move_left(400); continue; }
 
       Serial.println(" --none");
