@@ -1,5 +1,8 @@
-#include <CrawlerWheels.h>
-#include <RoboHand.h>
+#include <RoboHandMagnet.h>
+#include <MecanumWheelsStep.h>
+
+MecanumWheelsStep wheels;
+RoboHandMagnet hand;
 
 #define BUFFER_SIZE 512
 #define SSID  "ARTOFNOISE"
@@ -10,28 +13,27 @@
 char buffer[BUFFER_SIZE];
 char OKrn[] = "OK\r\n";
 byte wait_for_esp_response(int timeout, char* term=OKrn);
-
-CrawlerWheels wheels;
-RoboHand hand;
-
-void setup() {
+ 
+void setup()
+{
+  delay(1000);
   esp.begin(9600);
   Serial.begin(9600);
   Serial.println("begin");
-    
-  //setupWiFi();
+  setupWiFi();
 
-  //hand.init(17, 16, 15, 14);
-  //hand.arm_position_base_open();
-  //hand.free();
+  hand.init(38, 2, 3);
+  hand.arm_position_base_open();
+  hand.free();
 
   wheels.init(220, 255);
-  wheels.init_wheels(7, 6);
+  wheels.init_wheels(23,25,27, 34,32,30, 16,15,14, 26,24,22);
+
 }
-
-
-void loop() {
-  int ch_id, packet_len;
+ 
+void loop()
+{
+int ch_id, packet_len;
   char *pb;  
   if(read_till_eol()) {
     if(strncmp(buffer, "+IPD,", 5)==0) {
@@ -58,44 +60,46 @@ void loop() {
               Serial.println( item1 + ":" + item2 );
               if( item1 == "R" ){
                 if(item2 == "L"){
-                  Serial.println("turn left");
+                  Serial.println("rotate_left_90");
                   wheels.rotate_left_90();
+                  wheels.free_wheels();
                 }
                 if(item2 == "R"){
-                  Serial.println("turn right");
+                  Serial.println("rotate_right_90");
                   wheels.rotate_right_90();
+                  wheels.free_wheels();
                 }
               }
               if( item1 == "F" ){
                 int steps = item2.toInt();
                 for(int i=0; i < steps; i++){
+                  Serial.println("move_step_forward");
                   wheels.move_step_forward();
+                  wheels.free_wheels();
                 }
               }
               if( item1 == "B" ){
                 int steps = item2.toInt();
                 for(int i=0; i < steps; i++){
+                  Serial.println("move_step_back");
                   wheels.move_step_back();
+                  wheels.free_wheels();
                 }
               }
               if( item1 == "P" ){
                 if( item2 == "1" || item2 == "0"){
-                  hand.init(17, 16, 15, 14);
-                  hand.arm_position_base_open();
-                  hand.arm_move_level_1_open();
-                  hand.arm_position_level_1_closed();
-                  hand.arm_move_base_closed();
-                  hand.free();
+                  Serial.println("pick1");
+                  wheels.hold_wheels();
+                  hand.pick1();
+                  wheels.free_wheels();
                 }
               }
               if( item1 == "D" ){
                 if( item2 == "1" || item2 == "0"){
-                  hand.init(17, 16, 15, 14);
-                  hand.arm_position_base_closed();
-                  hand.arm_move_level_1_closed();
-                  hand.arm_position_level_1_open();
-                  hand.arm_move_base_open();
-                  hand.free();
+                  Serial.println("drop1");
+                  wheels.hold_wheels();
+                  hand.drop1();
+                  wheels.free_wheels();
                 }
               }
               
@@ -110,6 +114,7 @@ void loop() {
     }
   }
 }
+
 
 
 String getValue(String data, char separator, int index)
@@ -222,7 +227,7 @@ void setupWiFi() {
   // reset WiFi module
   esp.print("AT+RST\r\n");
   wait_for_esp_response(1500);
-  delay(3000);
+  delay(10000);
  
   // join AP
   esp.print("AT+CWJAP=\"");
@@ -231,14 +236,14 @@ void setupWiFi() {
   esp.print(PASS);
   esp.println("\"");
   // this may take a while, so wait for 5 seconds
-  wait_for_esp_response(5000);
+  wait_for_esp_response(10000);
   
-  esp.println("AT+CIPSTO=30");  
-  wait_for_esp_response(1000);
+  //esp.println("AT+CIPSTO=30");  
+  //wait_for_esp_response(5000);
 
   // start server
   esp.println("AT+CIPMUX=1");
-  wait_for_esp_response(1000);
+  wait_for_esp_response(5000);
   
   esp.print("AT+CIPSERVER=1,"); // turn on TCP service
   esp.println(PORT);
