@@ -98,25 +98,25 @@ void MecanumWheelsStep::set_to_contre(){
       float angle = round(find_current_angle1());
       delay(400);
       if( angle == 0.0) break;
-      if( angle < -8) { turn_right(4); continue; }
+      if( angle < -9) { turn_right(3); continue; }
       if( angle <  0) { turn_right(1); continue; }
 
-      if( angle > 8) { turn_left(4); continue; }
+      if( angle > 9) { turn_left(3); continue; }
       if( angle > 0) { turn_left(1); continue; }
 
     }
 
     print_coords();
-    int top_side = get_side(octoliner_top, 1);;
+    int top_side = get_side(octoliner_top, 1);
     int bottom_side = get_side(octoliner_bottom, 2);
     int left_side = get_side(octoliner_left, 4);
     int right_side = get_side(octoliner_right, 3);
     delay(200);
     if( top_side == 0.0 && left_side == 0.0) break;
-    if( top_side > 0) { move_right(4); continue; }
-    if( top_side < 0) { move_left(4); continue; }
-    if( left_side > 0) { move_forward(4); continue; }
-    if( left_side < 0) { move_back(4); continue; }
+    if( top_side > 0) { move_right(2); continue; }
+    if( top_side < 0) { move_left(2); continue; }
+    if( left_side > 0) { move_forward(2); continue; }
+    if( left_side < 0) { move_back(2); continue; }
   }
 
 }
@@ -301,7 +301,7 @@ void MecanumWheelsStep::make_steps(int steps){
     digitalWrite(stepPin4, LOW);
     delay(10);
   }
-  delay(200);
+  delay(100);
 }
 
 
