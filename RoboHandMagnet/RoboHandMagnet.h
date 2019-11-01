@@ -17,10 +17,12 @@ class RoboHandMagnet
 {
   public:
     RoboHandMagnet();
-    void init(int m1, int m3, int m4);
+    void init(int magnet, int m3, int mtop);
     void pick1();
     void drop1();
     void free();
+    void arm_position_bot_90();
+    void arm_position_top_90();
     void arm_position_base_open();
     void arm_position_base_closed();
     void arm_position_level_1_open();
@@ -30,18 +32,15 @@ class RoboHandMagnet
     void arm_move_level_1_closed();
     void arm_move_level_1_open();
 
-    void arm_move(int serv, int deg);
-    void arm_move2(int deg3, int deg4);
+    void arm_move(int bot, int top);
     void arm_move3(int deg3, int deg4);
 
     void arm_set(int serv, int deg);
 
   private:
-    int m1; int m3; int m4;
-    float pos3;
-    float pos4;
-    int max1; int min1;
-    int max2; int min2;
+    int magnet; int mbot; int mtop;
+    float posbot;
+    float postop;
     int max3; int min3;
     int max4; int min4;
 
