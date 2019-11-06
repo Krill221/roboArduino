@@ -49,7 +49,9 @@ class MecanumWheelsStep
 
     void turn_test(int ms);
     void turn_right(int ms);
+    void turn_right_half(int ms);
     void turn_left(int ms);
+    void turn_left_half(int ms);
     void move_left(int ms);
     void move_right(int ms);
     void move_forward(int ms);

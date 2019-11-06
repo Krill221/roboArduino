@@ -44,6 +44,7 @@ int ch_id, packet_len;
         pb++;
         if (strncmp(pb, "GET /", 5) == 0) {
           String pb_str = String(pb).substring(0,11);
+          String ans = "OK";
           if (pb_str == "GET /?path=" ) {
             
             String req_str = String(pb).substring(11);
@@ -58,6 +59,9 @@ int ch_id, packet_len;
               String item1 = item.substring(0,1);
               String item2 = item.substring(1);
               Serial.println( item1 + ":" + item2 );
+              if( item1 == "V" ){
+                ans = String(readVcc());
+              }
               if( item1 == "R" ){
                 if(item2 == "L"){
                   Serial.println("rotate_left_90");
@@ -108,7 +112,7 @@ int ch_id, packet_len;
             Serial.println("--------");
           }
           get_headers();
-          serve_homepage(ch_id);
+          serve_homepage(ch_id, ans);
         }
       }
     }
@@ -191,10 +195,10 @@ bool read_till_eol() {
   return false;
 }
 
-void serve_homepage(int ch_id) {
+void serve_homepage(int ch_id, String ans) {
   String header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: close\r\n";
 
-  String content="<div>OK</div>\n";
+  String content="<div>"+ ans +"</div>\n";
 
   header += "Content-Length:";
   header += (int)(content.length());
@@ -254,4 +258,18 @@ void setupWiFi() {
   esp.println("AT+CIFSR");
   wait_for_esp_response(1000);
     
+}
+
+
+long readVcc() {
+  long result;
+  // Read 1.1V reference against AVcc
+  ADMUX = _BV(REFS0) | _BV(MUX3) | _BV(MUX2) | _BV(MUX1);
+  delay(2); // Wait for Vref to settle
+  ADCSRA |= _BV(ADSC); // Convert
+  while (bit_is_set(ADCSRA,ADSC));
+  result = ADCL;
+  result |= ADCH<<8;
+  result = 1126400L / result; // Back-calculate AVcc in mV
+  return result;
 }

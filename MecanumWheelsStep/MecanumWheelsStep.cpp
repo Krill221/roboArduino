@@ -91,22 +91,27 @@ void MecanumWheelsStep::print_coords(){
 
 void MecanumWheelsStep::set_to_contre(){
 
-  for(int i =0; i < 20; i++){
+  for(int i =0; i < 12; i++){
 
     for(int i =0; i < 30; i++){
-      print_coords();
+      //print_coords();
       float angle = round(find_current_angle1());
       delay(400);
       if( angle == 0.0) break;
       if( angle < -9) { turn_right(3); continue; }
-      if( angle <  0) { turn_right(1); continue; }
+      if( angle < 0) {
+        if(i < 8) { turn_right(1); continue; }
+        else { turn_right_half(1); continue; }
+      }
 
       if( angle > 9) { turn_left(3); continue; }
-      if( angle > 0) { turn_left(1); continue; }
-
+      if( angle > 0) {
+        if(i < 8) { turn_left(1); continue; }
+        else { turn_left_half(1); continue; }
+      }
     }
 
-    print_coords();
+    //print_coords();
     int top_side = get_side(octoliner_top, 1);
     int bottom_side = get_side(octoliner_bottom, 2);
     int left_side = get_side(octoliner_left, 4);
@@ -213,6 +218,18 @@ void MecanumWheelsStep::rotate_right_90() {
     global_angle = global_angle + 90;
 }
 
+void MecanumWheelsStep::turn_right_half(int ms){
+  Serial.println("turn_right_half");
+  // Подаём питание на двигатель
+  digitalWrite(enablePin1, HIGH); digitalWrite(enablePin2, HIGH);
+  //digitalWrite(enablePin3, HIGH); digitalWrite(enablePin4, HIGH);
+  // Задаём направление вращения
+  digitalWrite(directionPin1, HIGH); // fr
+  digitalWrite(directionPin2, HIGH); // br
+  //digitalWrite(directionPin3, HIGH); // fl
+  //digitalWrite(directionPin4, HIGH); //lb
+  make_steps(ms);
+}
 void MecanumWheelsStep::turn_right(int ms){
   Serial.println("turn_right");
   // Подаём питание на двигатель
@@ -223,6 +240,18 @@ void MecanumWheelsStep::turn_right(int ms){
   digitalWrite(directionPin2, HIGH); // br
   digitalWrite(directionPin3, HIGH); // fl
   digitalWrite(directionPin4, HIGH); //lb
+  make_steps(ms);
+}
+void MecanumWheelsStep::turn_left_half(int ms){
+  Serial.println("turn_left_half");
+  // Подаём питание на двигатель
+  //digitalWrite(enablePin1, HIGH); digitalWrite(enablePin2, HIGH);
+  digitalWrite(enablePin3, HIGH); digitalWrite(enablePin4, HIGH);
+  // Задаём направление вращения
+  //digitalWrite(directionPin1, LOW); // fr
+  //digitalWrite(directionPin2, LOW); // br
+  digitalWrite(directionPin3, LOW); // fl
+  digitalWrite(directionPin4, LOW); //lb
   make_steps(ms);
 }
 void MecanumWheelsStep::turn_left(int ms){
