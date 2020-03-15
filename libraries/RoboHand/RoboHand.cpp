@@ -37,12 +37,12 @@ RoboHand::RoboHand(
     _middle_joint_shift = 0;
     _pick_joint_shift = 0;
 
-    base1_turn_pos = 125;
+    base1_turn_pos = 155;
     base2_turn_pos = 80;
     base1_joint_pos = 134;//154;
-    base2_joint_pos = 76;
+    base2_joint_pos = 75;
     middle_joint_pos = 121;//100;
-    pick_joint_pos = 40;//100;
+    pick_joint_pos = 30;//100;
 
     _servo_speed = 30;
 
@@ -89,7 +89,7 @@ void RoboHand::fullDetach(){
     base1_joint.detach();
     base2_joint.detach();
     middle_joint.detach();
-    pick_joint.detach();
+    //pick_joint.detach();
 }
 
 /* LOCKS */
@@ -154,7 +154,7 @@ void RoboHand::base1Turn(int new_pos){
 
     int pos = base1_turn_pos;
     base1_turn.attach(_id_base1_turn);
-    delay(100);
+    //delay(100);
     if( pos < new_pos) {
       for (; pos <= new_pos; pos += 1) {
         base1_turn.write(pos); delay(_servo_speed);
@@ -165,7 +165,7 @@ void RoboHand::base1Turn(int new_pos){
       }
     }
     base1_turn_pos = pos;
-    delay(100);
+    //delay(100);
     //base1_turn.detach();
 }
 /* END TURN */
@@ -174,7 +174,7 @@ void RoboHand::base1Turn(int new_pos){
 void RoboHand::base1Joint(int new_pos){
     int pos = base1_joint_pos;
     base1_joint.attach(_id_base1_joint);
-    delay(100);
+    //delay(100);
     if( pos < new_pos) {
       for (; pos <= new_pos; pos += 1) {
         base1_joint.write(pos); delay(_servo_speed);
@@ -185,13 +185,13 @@ void RoboHand::base1Joint(int new_pos){
       }
     }
     base1_joint_pos = pos;
-    delay(100);
-    base1_joint.detach();
+    //delay(100);
+    //base1_joint.detach();
 }
 void RoboHand::base2Joint(int new_pos){
     int pos = base2_joint_pos;
     base2_joint.attach(_id_base2_joint);
-    delay(100);
+    //delay(100);
     if( pos < new_pos) {
       for (; pos <= new_pos; pos += 1) {
         base2_joint.write(pos); delay(_servo_speed);
@@ -202,13 +202,13 @@ void RoboHand::base2Joint(int new_pos){
       }
     }
     base2_joint_pos = pos;
-    delay(100);
-    base2_joint.detach();
+    //delay(100);
+    //base2_joint.detach();
 }
 void RoboHand::base2Turn(int new_pos){
     int pos = base2_turn_pos;
     base2_turn.attach(_id_base2_turn);
-    delay(100);
+    //delay(100);
     if( pos < new_pos) {
       for (; pos <= new_pos; pos += 1) {
         base2_turn.write(pos); delay(_servo_speed);
@@ -219,14 +219,14 @@ void RoboHand::base2Turn(int new_pos){
       }
     }
     base2_turn_pos = pos;
-    delay(100);
+    //delay(100);
     //base2_turn.detach();
 }
 
 void RoboHand::middleJoint(int new_pos){
     int pos = middle_joint_pos;
     middle_joint.attach(_id_middle_joint);
-    delay(100);
+    //delay(100);
     if( pos < new_pos) {
       for (; pos <= new_pos; pos += 1) {
         middle_joint.write(pos); delay(_servo_speed);
@@ -237,13 +237,13 @@ void RoboHand::middleJoint(int new_pos){
       }
     }
     middle_joint_pos = pos;
-    delay(100);
+    //delay(100);
     //middle_joint.detach();
 }
 void RoboHand::pickJoint(int new_pos){
     int pos = pick_joint_pos;
     pick_joint.attach(_id_pick_joint);
-    delay(100);
+    //delay(100);
     if( pos < new_pos) {
       for (; pos <= new_pos; pos += 1) {
         pick_joint.write(pos); delay(_servo_speed);
@@ -254,8 +254,75 @@ void RoboHand::pickJoint(int new_pos){
       }
     }
     pick_joint_pos = pos;
-    delay(100);
+    //delay(100);
     //pick_joint.detach();
+}
+
+void RoboHand::moveJoint(int new_pos, int new_pos2){
+
+    int pos = middle_joint_pos;
+    int pos2 = base1_joint_pos;
+    base1_joint.attach(_id_base1_joint);
+    middle_joint.attach(_id_middle_joint);
+    //delay(100);
+
+    if( pos < new_pos && pos2 < new_pos2 ) {
+      for (; pos < new_pos || pos2 < new_pos2;) {
+         if(pos < new_pos) pos += 1;
+         if(pos2 < new_pos2) pos2 += 1;
+         middle_joint.write(pos);
+         base1_joint.write(pos2);
+         delay(_servo_speed);
+      }
+    }
+    if( pos >= new_pos && pos2 >= new_pos2 ) {
+      for (; pos > new_pos || pos2 > new_pos2 ;) {
+         if(pos > new_pos) pos -= 1;
+         if(pos2 > new_pos2) pos2 -= 1;
+         middle_joint.write(pos);
+         base1_joint.write(pos2);
+         delay(_servo_speed);
+      }
+    }
+    middle_joint_pos = pos;
+    base1_joint_pos = pos2;
+    //delay(100);
+
+    //middle_joint.detach();
+    //base1_joint.detach();
+}
+void RoboHand::moveJoint2(int new_pos, int new_pos2){
+
+    int pos = middle_joint_pos;
+    int pos2 = base2_joint_pos;
+    base2_joint.attach(_id_base2_joint);
+    middle_joint.attach(_id_middle_joint);
+    //delay(100);
+
+    if( pos < new_pos && pos2 >= new_pos2 ) {
+      for (; pos < new_pos || pos2 > new_pos2;) {
+         if(pos < new_pos) pos += 1;
+         if(pos2 > new_pos2) pos2 -= 1;
+         middle_joint.write(pos);
+         base2_joint.write(pos2);
+         delay(_servo_speed);
+      }
+    }
+    if( pos >= new_pos && pos2 < new_pos2 ) {
+      for (; pos > new_pos || pos2 < new_pos2 ;) {
+         if(pos > new_pos) pos -= 1;
+         if(pos2 < new_pos2) pos2 += 1;
+         middle_joint.write(pos);
+         base2_joint.write(pos2);
+         delay(_servo_speed);
+      }
+    }
+    middle_joint_pos = pos;
+    base2_joint_pos = pos2;
+    //delay(100);
+
+    //middle_joint.detach();
+    //base2_joint.detach();
 }
 void RoboHand::base1TurnDetach(){
     base1_turn.detach();
@@ -270,36 +337,96 @@ void RoboHand::pickJointDetach(){
     middle_joint.detach();
 }
 /* END ANGLE */
-
 /* ACTION */
+void RoboHand::uTurn(){
+  base1Lock();
+  base2Unlock();
+  runUp();
+  turnRight();
+  delay(500);
+  runDown();
+  base1TurnDetach();
+}
+
 void RoboHand::stepForward1(){
 
   // LOCK
     base1Lock();
-    base2Lock();
-
-    base1Turn(125);
-    base1Joint(150);
-    middleJoint(74);
-    base2Joint(95);
-    base1Joint(115);
-    delay(9000);
-    base1Joint(150);
-    base2Joint(76);
-    middleJoint(121);
-    base2Joint(76);
+    base2Unlock();
+    delay(500);
+    pickJoint(30);
     base1Joint(134);
+    base2Joint(75);
+    middleJoint(121);
 
-    runDown();
+    //base1Joint(160);
+    //base2Joint(99);
+    //middleJoint(110);
+    base1Joint(178);
+    base2Joint(96);
+    middleJoint(98);
+    moveJoint(67, 111);
+    base2Joint(99);
+    middleJoint(67);
+    base1Joint(111);
+
+    delay(500);
+    base2Lock();
+    delay(500);
+    base1Unlock();
+    delay(500);
+
+    //// back
+    base2Joint(80);
+    moveJoint2(121, 50);
+    base1Joint(134);
+    base2Joint(75);
 
     /// DETACH
-    base1TurnDetach();
-    middleJointDetach();
     delay(500);
-    base1Lock();
+    base1Unlock();
     base2Unlock();
     fullDetach();
+
+    Serial.println("stepForward1 done");
+}
+
+
+void RoboHand::stepBack1(){
+
+  // LOCK
+    base2Lock();
+    base1Unlock();
+    pickJoint(30);
+
+    base2Joint(49);
+    base1Joint(111);
+    middleJoint(110);
+    moveJoint2(67, 99);
+
+    ////// lock
     delay(500);
+    base1Lock();
+    delay(500);
+    base2Unlock();
+    delay(500);
+
+    //// back
+    base1Joint(123);
+    //middleJoint(121);
+    moveJoint(111, 170); //moveJoint2(121, 75);
+    moveJoint2(121, 82);
+    middleJoint(121);
+    base2Joint(72);
+    base1Joint(134);
+    base2Joint(75);
+
+    /// DETACH
+    delay(500);
+    base1Unlock();
+    base2Unlock();
+    fullDetach();
+    Serial.println("stepBack1 done");
 }
 
 void RoboHand::stepBase2(){
@@ -320,7 +447,6 @@ void RoboHand::stepBase2(){
     fullDetach();
     delay(500);
 }
-
 void RoboHand::runUpBase2(){
     base1Joint(134);
     middleJoint(121);
@@ -329,25 +455,29 @@ void RoboHand::runUpBase2(){
 void RoboHand::runDownBase2(){
     base1Joint(134);
     middleJoint(121);
-    base2Joint(76);
+    base2Joint(75);
 }
 void RoboHand::runUp(){
     base1Joint(180);
-    base2Joint(76);
+    base2Joint(75);
     middleJoint(121);
 }
 void RoboHand::runDown(){
     middleJoint(121);
-    base2Joint(76);
+    base2Joint(75);
     base1Joint(134);
 }
 void RoboHand::turnRight(){
-    base1Turn(60);
-    base2Joint(76);
+    base1Turn(28);
+    //base2Joint(75);
 }
 void RoboHand::turnCenter(){
-    base1Turn(125);
-    base2Joint(76);
+    base1Turn(90);
+    //base2Joint(75);
+}
+void RoboHand::turnLeft(){
+    base1Turn(155);
+    //base2Joint(75);
 }
 
 void RoboHand::putFrontToRight(){
@@ -411,16 +541,16 @@ void RoboHand::putRightToFront(){
 void RoboHand::pickBox(){
 
   // LOCK
-    pickJoint(40);
+    pickJoint(30);
     base1Lock();
     base2Lock();
     base3Unlock();
 
-    pickJoint(120);
+    pickJoint(117);
     delay(500);
     base3Lock();
     delay(500);
-    pickJoint(40);
+    pickJoint(30);
 
     delay(500);
     base2Unlock();
@@ -429,16 +559,16 @@ void RoboHand::pickBox(){
 void RoboHand::putBox(){
 
   // LOCK
-    pickJoint(40);
+    pickJoint(30);
     base1Lock();
     base2Lock();
     base3Lock();
 
-    pickJoint(120);
+    pickJoint(117);
     delay(500);
     base3Unlock();
     delay(500);
-    pickJoint(40);
+    pickJoint(30);
 
     delay(500);
     base2Unlock();

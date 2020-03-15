@@ -73,6 +73,8 @@ class RoboHand
     void base2Joint(int deg);
     void middleJoint(int deg);
     void pickJoint(int deg);
+    void moveJoint(int deg, int deg2);
+    void moveJoint2(int deg, int deg2);
     void middleJointDetach();
     void pickJointDetach();
     void base1TurnDetach();
@@ -84,10 +86,13 @@ class RoboHand
     void runDownBase2();
     void turnCenter();
     void turnRight();
+    void turnLeft();
+    void uTurn();
     void putFrontToRight();
     void putRightToFront();
     void stepBase2();
     void stepForward1();
+    void stepBack1();
     void pickBox();
     void putBox();
 
